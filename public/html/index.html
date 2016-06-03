@@ -2,10 +2,18 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>Nodman</title>
+        <title>Manager</title>
     </head>
     <body>
-        <script src="/socket.io/socket.io.js"></script> 
-        <script src="../../src/controllers/ioOperations.js" type="text/javascript" charset="utf-8"></script>
+        <!--
+        <div id="Web" class="server">
+            <button type='button' onclick="start('DKWeb_Server')">start web</button>
+            <button type='button' onclick="restart('DKWeb_Server')">restart web</button>
+        </div>
+        -->
+        <button type='button' onclick="restart('DKModules_Server')">restart modules</button>
+        <button type='button' onclick="restart('DKConnect_Server')">restart connect</button>
+        <script src="./public/socket.io.js" type="text/javascript" charset="utf-8"></script>
+        <script src="./public/io.client.js" type="text/javascript" charset="utf-8"></script>
     </body>
 </html>
