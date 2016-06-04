@@ -4,7 +4,7 @@ socket.on('server-status', function (info) {
     var name = info.name;
     var isRunning = info.status;
     if (isRunning) {
-        console.log('xxx');
+        console.log(name + '');
     } 
 });
 

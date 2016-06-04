@@ -1,6 +1,7 @@
 var fork = require('child_process').fork;
 
 function ioOperation(socket, servers, ServerConfig) {
+    // 监听活服务器的状态
     for (var name in servers) {
         if (servers[name]) {
             (function (name) {
