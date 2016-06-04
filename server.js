@@ -6,6 +6,7 @@ var fork = require('child_process').fork;
 //var fork = require('child_process').spawn;
 var ServerGroup = null;
 var ioOperation = require('./src/controllers/io.server.js');
+var constant = require('./src/common/const.js');
 var port = 3005;
 
 /* Express 静态文件指向设置 */
@@ -33,9 +34,18 @@ ServerGroup = initServers(ServerConfig);
 
 /* 监听Socket.io链接*/
 io.on('connection', function (socket) {
-    console.log('A user connected');
     ioOperation(socket, ServerGroup, ServerConfig);
 })
+
+/* 当此进程退出时，终止所有子进程 */
+process.on('SIGINT', function (code) {
+    for (var x in ServerGroup) {
+        var server = ServerGroup[x].server;
+        if (server) {
+            process.kill(-server.pid);
+        }
+    }
+});
 
 /* 辅助函数 */
 function initServers (ServerConfig) {
@@ -48,26 +58,19 @@ function initServers (ServerConfig) {
 
             var script = config.script;
             var options = config.options;
-            var args = config.args; //TODO:
+            var args = config.args; 
 
             try {
-                var child = fork(script, args, options); //TODO: args is not need for spawn
+                var child = fork(script, args, options); 
             } catch (e) {
                 console.log(e);
                 return;
             }
-
-            child.stderr.on('data', function (err) {
-                console.log(x + '' + err);
-            });
-
-            child.on('close', function (status) {
-                console.log(x + ' exited with ' + status );
-            });
-
+            servers[x] = {
+                server: child,
+                status: constant.RUNNING
+            };
             console.log('Server ' + x + ' Started');
-
-            servers[x] = child;
         })(x);
     }
     return servers;
