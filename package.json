@@ -1,24 +1,17 @@
 {
-  "name": "GameManager",
+  "name": "ServerManage",
   "version": "1.0.0",
-  "description": "---- A web interface for managing node servers from anywhere.",
+  "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/DingDean/nodman.git"
-  },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/DingDean/nodman/issues"
-  },
-  "homepage": "https://github.com/DingDean/nodman#readme",
   "dependencies": {
-    "express": "^4.13.4",
-    "socket.io": "^1.4.6"
+    "express": "^4.14.0",
+    "redis": "^2.6.2",
+    "socket.io": "^1.4.8"
   }
 }
