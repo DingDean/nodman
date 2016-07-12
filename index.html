@@ -7,13 +7,23 @@
     </head>
     <body>
         A body
-        <button type="button" onClick="start('test channel')">Start</button>
-        <button type="button" onClick="kill('test channel')">Close</button>
+        <button type="button" onClick="start('server a')">Start</button>
+        <button type="button" onClick="kill('server a')">Close</button>
+        <button type="button" onClick="showLog('server a')">Show Log</button>
+        <button type="button" onClick="closeLog('server a')">Close Log</button>
         <button type="button" onClick="start()">Start No</button>
         <button type="button" onClick="kill()">Close No</button>
+        <div id="log"> 
+            
+        </div>
     </body>
     <script>
         var socket = io.connect('http://localhost:4500');  
+        var logDiv = document.getElementById("log");
+        socket.on('logInfo', function (msg) {
+            logDiv.innerHTML += msg;
+        });
+
         function start (channel) 
         {
             socket.emit('start',channel ? channel : "main");
@@ -21,6 +31,14 @@
         function kill (channel) 
         {
             socket.emit('close', channel ? channel : "main");
+        }
+        function showLog (channel) 
+        {
+            socket.emit('show log', channel ? channel : "main");
+        }
+        function closeLog (channel)
+        {
+            socket.emit('close log', channel ? channel : "main");
         }
     </script>
 </html>
