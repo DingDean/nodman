@@ -46,6 +46,10 @@ subscriber.on('message', (channel, msg) => {
                 child_node = forkNode(config.fork);
                 if (child_node) {
                     publish('Server is running!');
+                    /* configure std, stderr */
+                    child_node.stdout.on('data', (data) => {
+                        publish(data);
+                    });
                 }
             }
             break;
@@ -56,28 +60,6 @@ subscriber.on('message', (channel, msg) => {
                 child_node.kill('SIGKILL');
                 child_node = null;
                 publish('Server is closed!');
-            }
-            break;
-        case 'restart':
-            if (child_node) {
-                child_node.kill('SIGKILL');
-                child_node = null;
-            }
-            child_node = forkNode(config.fork);
-            if (child_node) {
-                publish("Server is restarted!");
-            }
-            break;
-        case 'show log' : 
-            if (!child_node) {
-                return publish("Server is not started. Show log doesn't work!")
-            }
-            if (child_node.stdout) {
-                child_node.stdout.on('data', (data) => {
-                    publish(data);
-                });
-            } else {
-                publish("The output can not be obtained!");
             }
             break;
         default: 

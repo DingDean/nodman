@@ -48,8 +48,8 @@ subscriber.on('message', (channel, msg) => {
     switch (msg) {
         default:
             console.log(msg);
-            rooms.reduce((pre, cur)=>{
-                io.to(cur).emit('logInfo', msg);
+            rooms.map((name) => name.split('_')).reduce((pre, cur)=>{
+                io.to(cur[1]).emit('logInfo', msg);
                 return true;
             }, true);
     }
@@ -59,48 +59,36 @@ subscriber.on('message', (channel, msg) => {
 /* 监听socket.io */
 io.on('connection', (socket) => {
     var isJoinedRoom = false;
+
     socket.on('start', (server) => {
         publisher.publish(server, 'start');
     });
 
     socket.on('close', (server) => {
+        rooms = rooms.filter((roomName) => roomName !== `${server}_${socket.id}`);
+        isJoinedRoom = false;
         publisher.publish(server, 'close');
     });
 
-    socket.on('restart', (server) => {
-        publisher.publish(server, 'restart');
-    });
-
-    socket.on('reload', (server) => {
-        publisher.publish(server, 'reload');
-    });
-
     socket.on('show log', (server) => {
-        if (isJoinedRoom) {
-            console.log(`${socket.id} has joined the room`);
-            console.log(`Current rooms is ${rooms}`);
-            publisher.publish(server, `${socket.id} is already outputing log`);
-        } else {
-            console.log(`${socket.id} is joining the room`);
-            isJoinedRoom = true;
-            rooms.push(socket.id);
-            publisher.publish(server, `show log`);
-            console.log(`Current rooms is ${rooms}`);
-        }
+        joinRoom(server, socket);
     });
 
     socket.on('close log', (server) => {
-        if (isJoinedRoom) {
-            console.log(`${socket.id} is leaving the room`);
-            rooms = rooms.filter((id) => id !== socket.id);
-            console.log(`Current rooms is ${rooms}`);
-            isJoinedRoom = false;
-        } else {
-            console.log(`${socket.id} has already left the room`);
-            console.log(`Current rooms is ${rooms}`);
-        }
+        rooms = rooms.filter((roomName) => roomName !== `${server}_${socket.id}`);
+        isJoinedRoom = false;
     });
 
+    function joinRoom (server, socket)
+    {
+        if (isJoinedRoom) {
+            publisher.publish(server, `${socket.id} is already outputing log`);
+        } else {
+            isJoinedRoom = true;
+            var roomName = `${server}_${socket.id}`;
+            rooms.push(roomName);
+        }
+    }
 
 });
 

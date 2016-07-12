@@ -18,10 +18,10 @@
         </div>
     </body>
     <script>
-        var socket = io.connect('http://localhost:4500');  
+        var socket = io.connect('http://192.168.88.80:4500');  
         var logDiv = document.getElementById("log");
         socket.on('logInfo', function (msg) {
-            logDiv.innerHTML += msg;
+            logDiv.innerHTML += "<div>" + msg + "</div>";
         });
         function start (channel) 
         {
