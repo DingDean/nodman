@@ -4,15 +4,7 @@
     "fork" : {
         "modulePath": "./worker.js",
         "options" : {
-<<<<<<< HEAD
-            "silent" : false
-        }
-    }
-}
-=======
             "silent" : true
         }
     }
 }
-
->>>>>>> use-redis
