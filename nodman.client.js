@@ -68,18 +68,6 @@ subscriber.on('message', (channel, msg) => {
                 publish("Server is restarted!");
             }
             break;
-<<<<<<< HEAD
-        case 'log':
-            if (!child_node) {
-                publish("Sever is not running!");
-            } else {
-                if (process.stdout) {
-                    process.stdout.on('data', (data) => {
-                        return publish(data);
-                    });
-                }
-                return publish('no log');
-=======
         case 'show log' : 
             if (!child_node) {
                 return publish("Server is not started. Show log doesn't work!")
@@ -90,7 +78,6 @@ subscriber.on('message', (channel, msg) => {
                 });
             } else {
                 publish("The output can not be obtained!");
->>>>>>> use-redis
             }
             break;
         default: 
@@ -107,17 +94,8 @@ function publish (msg)
 function forkNode (config)
 {
     var modulePath = config.modulePath ? config.modulePath : null;
-<<<<<<< HEAD
-    var args = config.args ? config.args : null;
-    var options = config.options ? config.options : null;
-    if (!modulePath) return null;
-    return fork(modulePath, args, options);
-}
-=======
     var args = config.args ? config.args : [];
     var options = config.options ? config.options : {};
     if (!modulePath) return null;
     return fork(modulePath, args, options);
 }
-
->>>>>>> use-redis
