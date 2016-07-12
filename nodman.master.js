@@ -53,6 +53,8 @@ subscriber.on('message', (channel, msg) => {
         default:
             console.log(msg);
             rooms.map((name) => name.split('_')).reduce((pre, cur)=>{
+                console.log(channel);
+                if (channel !== `${cur[0]}Log`) return true;
                 console.log(cur);
                 var serverLogInfo = {
                     server: cur[0],
@@ -96,6 +98,7 @@ io.on('connection', (socket) => {
     console.log(`${socket.id} is connected`);
 
     socket.on('start', (server) => {
+        console.log(`Starting ${server}`)
         publisher.publish(server, 'start');
     });
 
