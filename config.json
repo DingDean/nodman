@@ -1,0 +1,10 @@
+{
+    "subscribe":"server a",
+    "publish": "feedback",
+    "fork" : {
+        "modulePath": "./worker.js",
+        "options" : {
+            "silent" : false
+        }
+    }
+}
