@@ -38,20 +38,41 @@ subscriber.on('connect', () => {
     console.log('subscriber connected!');
 });
 
-subscriber.subscribe('status channel');
+/* 监听main频道 */
+subscriber.subscribe('feedback');
 subscriber.on('message', (channel, msg) => {
-    console.log(msg);
+    if (channel!= 'feedback') {
+        return;
+    }
+    switch (msg) {
+        default:
+            console.log(msg);
+    }
 });
 
 
-/* 设置socket.io */
+
+/* 监听socket.io */
 io.on('connection', (socket) => {
     socket.on('start', (server) => {
+        console.log('start');
         publisher.publish(server, 'start');
     });
 
     socket.on('close', (server) => {
         publisher.publish(server, 'close');
+    });
+
+    socket.on('restart', (server) => {
+        publisher.publish(server, 'restart');
+    });
+
+    socket.on('reload', (server) => {
+        publisher.publish(server, 'reload');
+    });
+
+    socket.on('log', (server) => {
+        publisher.publish(server, 'log');
     });
 });
 
