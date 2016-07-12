@@ -1,0 +1,11 @@
+{
+    "subscribe":"TestServer",
+    "publish": "TestServerLog",
+    "port": 4501,
+    "fork" : {
+        "modulePath": "./worker.js",
+        "options" : {
+            "silent" : true
+        }
+    }
+}
