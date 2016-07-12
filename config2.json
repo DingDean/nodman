@@ -1,6 +1,7 @@
 {
-    "subscribe":"server a",
-    "publish": "feedback",
+    "subscribe":"TServer",
+    "publish": "TServerLog",
+    "port": 4502,
     "fork" : {
         "modulePath": "./worker.js",
         "options" : {

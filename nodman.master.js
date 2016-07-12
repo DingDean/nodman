@@ -40,33 +40,66 @@ subscriber.on('connect', () => {
 
 var rooms = [];
 /* 监听main频道 */
-subscriber.subscribe('feedback');
+// TODO: 获取服务器列表, 监听每一个服务器的信息
+var serverListMock = ['TestServerLog', 'TServerLog'];
+
+serverListMock.reduce((pre, server) => {
+    subscriber.subscribe(server);
+    return true;
+}, true);
+
 subscriber.on('message', (channel, msg) => {
-    if (channel!= 'feedback') {
-        return;
-    }
     switch (msg) {
         default:
             console.log(msg);
             rooms.map((name) => name.split('_')).reduce((pre, cur)=>{
-                io.to(cur[1]).emit('logInfo', msg);
+                console.log(cur);
+                var serverLogInfo = {
+                    server: cur[0],
+                    msg: msg
+                };
+                io.to(cur[1]).emit('logInfo', JSON.stringify(serverLogInfo));
                 return true;
             }, true);
     }
 });
 
+/*
+subscriber.on('message', (channel, msg) => {
+    console.log(msg);
+
+    function getServerAndSocketID(server_socketId)
+    {
+        return server_socketId.split('_');
+    }
+
+    function getTheListenerForThisServer (serverSocketId)
+    {
+        return serverSocketId.filter((serverSocketId) => serverSocketId[0] === channel);
+    }
+
+    function sendMsgToSockets (pre, cur)
+    {
+        io.to(cur[1]).emit('logInfo', msg);
+        return true;
+    }
+
+    rooms.map(getServerAndSocketID).filter(getTheListenerForThisServer).reduce(sendMsgToSockets, true);
+});
+*/
+
 
 /* 监听socket.io */
 io.on('connection', (socket) => {
-    var isJoinedRoom = false;
+    //var isJoinedRoom = false;
+    var isJoinedRoom = {};
+    console.log(`${socket.id} is connected`);
 
     socket.on('start', (server) => {
         publisher.publish(server, 'start');
     });
 
     socket.on('close', (server) => {
-        rooms = rooms.filter((roomName) => roomName !== `${server}_${socket.id}`);
-        isJoinedRoom = false;
         publisher.publish(server, 'close');
     });
 
@@ -81,10 +114,11 @@ io.on('connection', (socket) => {
 
     function joinRoom (server, socket)
     {
-        if (isJoinedRoom) {
+
+        if (isJoinedRoom[server]) {
             publisher.publish(server, `${socket.id} is already outputing log`);
         } else {
-            isJoinedRoom = true;
+            isJoinedRoom[server] = true;
             var roomName = `${server}_${socket.id}`;
             rooms.push(roomName);
         }

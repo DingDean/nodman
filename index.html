@@ -7,37 +7,53 @@
     </head>
     <body>
         A body
-        <button type="button" onClick="start('server a')">Start</button>
-        <button type="button" onClick="kill('server a')">Close</button>
-        <button type="button" onClick="showLog('server a')">Show Log</button>
-        <button type="button" onClick="closeLog('server a')">Close Log</button>
-        <button type="button" onClick="start()">Start No</button>
-        <button type="button" onClick="kill()">Close No</button>
+        <div>
+            <button type="button" onClick="start('TestServer')">Start</button>
+            <button type="button" onClick="kill('TestServer')">Close</button>
+            <button type="button" onClick="showLog('TestServer')">Show Log</button>
+            <button type="button" onClick="closeLog('TestServer')">Close Log</button>
+            <div id="TestServerLog">
+            </div>
+        </div>
         <div id="log"> 
-            
+            <button type="button" onClick="start('TServer')">Start</button>
+            <button type="button" onClick="kill('TServer')">Close</button>
+            <button type="button" onClick="showLog('TServer')">Show Log</button>
+            <button type="button" onClick="closeLog('TServer')">Close Log</button>
+            <div id="TServerLog">
+            </div>
         </div>
     </body>
     <script>
         var socket = io.connect('http://192.168.88.80:4500');  
-        var logDiv = document.getElementById("log");
+
         socket.on('logInfo', function (msg) {
-            logDiv.innerHTML += "<div>" + msg + "</div>";
+            (function () {
+                var data = JSON.parse(msg);
+                var lonDiv = document.getElementById(`${data.server}Log`);
+                lonDiv.innerHTML += "<div>" + msg + "</div>";
+            })();
         });
-        function start (channel) 
+
+        function start (server) 
         {
-            socket.emit('start',channel ? channel : "main");
+            socket.emit('start',server ? server : "main");
+            console.log('start' + server);
         }
-        function kill (channel) 
+        function kill (server) 
         {
-            socket.emit('close', channel ? channel : "main");
+            socket.emit('close', server ? server : "main");
+            console.log('close' + server);
         }
-        function showLog (channel) 
+        function showLog (server) 
         {
-            socket.emit('show log', channel ? channel : "main");
+            socket.emit('show log', server ? server : "main");
+            console.log('show log' + server);
         }
-        function closeLog (channel)
+        function closeLog (server)
         {
-            socket.emit('close log', channel ? channel : "main");
+            console.log('close log' + server);
+            socket.emit('close log', server ? server : "main");
         }
     </script>
 </html>

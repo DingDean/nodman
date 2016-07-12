@@ -5,11 +5,11 @@ var fork = require('child_process').fork;
 
 
 /* global variables */
-var config = require('./config.json');
+var config = require(`./${process.argv[2]}`);
 
 /* Express 服务器开启监听 */
-server.listen(4501, function () {
-    console.log('Client is hosting on port ' + 4501);
+server.listen(config.port, function () {
+    console.log('Client is hosting on port ' + config.port);
 });
 
 /* Setup Redis */
