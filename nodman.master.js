@@ -38,6 +38,7 @@ subscriber.on('connect', () => {
     console.log('subscriber connected!');
 });
 
+var rooms = [];
 /* 监听main频道 */
 subscriber.subscribe('feedback');
 subscriber.on('message', (channel, msg) => {
@@ -47,15 +48,18 @@ subscriber.on('message', (channel, msg) => {
     switch (msg) {
         default:
             console.log(msg);
+            rooms.reduce((pre, cur)=>{
+                io.to(cur).emit('logInfo', msg);
+                return true;
+            }, true);
     }
 });
 
 
-
 /* 监听socket.io */
 io.on('connection', (socket) => {
+    var isJoinedRoom = false;
     socket.on('start', (server) => {
-        console.log('start');
         publisher.publish(server, 'start');
     });
 
@@ -71,14 +75,36 @@ io.on('connection', (socket) => {
         publisher.publish(server, 'reload');
     });
 
-    socket.on('log', (server) => {
-        publisher.publish(server, 'log');
+    socket.on('show log', (server) => {
+        if (isJoinedRoom) {
+            console.log(`${socket.id} has joined the room`);
+            console.log(`Current rooms is ${rooms}`);
+            publisher.publish(server, `${socket.id} is already outputing log`);
+        } else {
+            console.log(`${socket.id} is joining the room`);
+            isJoinedRoom = true;
+            rooms.push(socket.id);
+            publisher.publish(server, `show log`);
+            console.log(`Current rooms is ${rooms}`);
+        }
     });
+
+    socket.on('close log', (server) => {
+        if (isJoinedRoom) {
+            console.log(`${socket.id} is leaving the room`);
+            rooms = rooms.filter((id) => id !== socket.id);
+            console.log(`Current rooms is ${rooms}`);
+            isJoinedRoom = false;
+        } else {
+            console.log(`${socket.id} has already left the room`);
+            console.log(`Current rooms is ${rooms}`);
+        }
+    });
+
+
 });
 
 /* Express 服务器开启监听 */
 server.listen(4500, function () {
     console.log('Server Manager is hosting on port ' + 4500);
 });
-
-
