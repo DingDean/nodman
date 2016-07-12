@@ -23,7 +23,6 @@
         socket.on('logInfo', function (msg) {
             logDiv.innerHTML += msg;
         });
-
         function start (channel) 
         {
             socket.emit('start',channel ? channel : "main");
