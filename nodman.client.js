@@ -46,8 +46,21 @@ subscriber.on('message', (channel, msg) => {
                 child_node = forkNode(config.fork);
                 if (child_node) {
                     publish('Server is running!');
+
+                    child_node.on('error', (error) => {
+                        publish(`The server ${channel} exits with error ${error}`);
+                    });
+
+                    child_node.on('exit', (code, signal) => {
+                        publish(`The server ${channel} exits with code ${code} under signal ${signal}`);
+                    });
+
                     /* configure std, stderr */
                     child_node.stdout.on('data', (data) => {
+                        publish(data);
+                    });
+
+                    child_node.stderr.on('data', (data) => {
                         publish(data);
                     });
                 }
@@ -81,3 +94,7 @@ function forkNode (config)
     if (!modulePath) return null;
     return fork(modulePath, args, options);
 }
+
+process.on('exit', (code) => {
+    subscriber.unsubscribe();
+});
