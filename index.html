@@ -25,34 +25,36 @@
         </div>
     </body>
     <script>
-        var socket = io.connect('http://10.0.0.4:4500');  
+        var socket = io.connect('/');  
 
         socket.on('logInfo', function (msg) {
-            (function () {
-                var data = JSON.parse(msg);
-                var lonDiv = document.getElementById(`${data.server}Log`);
-                lonDiv.innerHTML += "<div>" + msg + "</div>";
-            })();
+            var data = JSON.parse(msg);
+            var lonDiv = document.getElementById(`${data.server}Log`);
+            lonDiv.innerHTML += "<div>" + msg + "</div>";
+        });
+
+        socket.on('feedback', function (msg) {
+            var data = JSON.parse(msg);
+            var lonDiv = document.getElementById(`${data.server}Log`);
+            // 处理服务器状态信息反馈
+            //lonDiv.innerHTML += "<div>" + msg + "</div>";
+            console.log(msg);
         });
 
         function start (server) 
         {
             socket.emit('start',server ? server : "main");
-            console.log('start' + server);
         }
         function kill (server) 
         {
             socket.emit('close', server ? server : "main");
-            console.log('close' + server);
         }
         function showLog (server) 
         {
             socket.emit('show log', server ? server : "main");
-            console.log('show log' + server);
         }
         function closeLog (server)
         {
-            console.log('close log' + server);
             socket.emit('close log', server ? server : "main");
         }
     </script>

@@ -1,0 +1,12 @@
+#!/bin/sh
+
+if [ $1 ] 
+then
+    case $1 in
+        'new' )
+            read -p "Are you sure?"
+            echo
+            ;;
+    esac;
+fi;
+

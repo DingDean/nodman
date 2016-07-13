@@ -8,8 +8,8 @@ var spawn = require('child_process').fork;
 
 /* Express 静态文件指向设置 */
 app.use('/', express.static(__dirname));
-//app.use('/public', express.static(__dirname + '/public'));
-//app.use('/src', express.static(__dirname + '/src'));
+//app.use('/public', express.static(@_dirname + '/public'));
+//app.use('/src', express.static(@_dirname + '/src'));
 
 /* Express 路由设置 */
 app.route('/').get(function (req, res) {
@@ -41,64 +41,36 @@ subscriber.on('connect', () => {
 var rooms = [];
 /* 监听main频道 */
 // TODO: 获取服务器列表, 监听每一个服务器的信息
-var serverListMock = ['TestServerLog', 'TServerLog'];
+var servers = require('./configs/master.config.json').servers;
 
-serverListMock.reduce((pre, server) => {
-    subscriber.subscribe(server);
+servers.reduce((pre, server) => {
+    subscriber.subscribe(`${server}Log`);
     return true;
 }, true);
 
 subscriber.on('message', (channel, msg) => {
-    switch (msg) {
-        default:
-            console.log(msg);
-            rooms.map((name) => name.split('_')).reduce((pre, cur)=>{
-                console.log(channel);
-                if (channel !== `${cur[0]}Log`) return true;
-                console.log(cur);
-                var serverLogInfo = {
-                    server: cur[0],
-                    msg: msg
-                };
-                io.to(cur[1]).emit('logInfo', JSON.stringify(serverLogInfo));
-                return true;
-            }, true);
-    }
-});
-
-/*
-subscriber.on('message', (channel, msg) => {
-    console.log(msg);
-
-    function getServerAndSocketID(server_socketId)
-    {
-        return server_socketId.split('_');
-    }
-
-    function getTheListenerForThisServer (serverSocketId)
-    {
-        return serverSocketId.filter((serverSocketId) => serverSocketId[0] === channel);
-    }
-
-    function sendMsgToSockets (pre, cur)
-    {
-        io.to(cur[1]).emit('logInfo', msg);
+    //console.log(msg);
+    rooms
+    .map((name) => name.split('@'))
+    .reduce((pre, cur)=>{
+        if (channel !== `${cur[0]}Log`) return true;
+        var serverLogInfo = {
+            server: cur[0],
+            msg: msg
+        };
+        io.to(cur[1]).emit('logInfo', JSON.stringify(serverLogInfo));
         return true;
-    }
-
-    rooms.map(getServerAndSocketID).filter(getTheListenerForThisServer).reduce(sendMsgToSockets, true);
+    }, true);
 });
-*/
-
 
 /* 监听socket.io */
 io.on('connection', (socket) => {
     //var isJoinedRoom = false;
     var isJoinedRoom = {};
-    console.log(`${socket.id} is connected`);
+    //console.log(`${socket.id} is connected`);
 
     socket.on('start', (server) => {
-        console.log(`Starting ${server}`)
+        //console.log(`Starting ${server}`)
         publisher.publish(server, 'start');
     });
 
@@ -111,18 +83,23 @@ io.on('connection', (socket) => {
     });
 
     socket.on('close log', (server) => {
-        rooms = rooms.filter((roomName) => roomName !== `${server}_${socket.id}`);
-        isJoinedRoom = false;
+        rooms = rooms.filter((roomName) => roomName !== `${server}@${socket.id}`);
+        delete isJoinedRoom[server];
     });
 
     function joinRoom (server, socket)
     {
 
         if (isJoinedRoom[server]) {
-            publisher.publish(server, `${socket.id} is already outputing log`);
+            //publisher.publish(server, `${socket.id} is already outputing log`);
+            var serverLogInfo = {
+                server: server,
+                msg: `${server}'s Log has already been enabled!`
+            };
+            io.to(socket.id).emit('feedback', JSON.stringify(serverLogInfo));
         } else {
             isJoinedRoom[server] = true;
-            var roomName = `${server}_${socket.id}`;
+            var roomName = `${server}@${socket.id}`;
             rooms.push(roomName);
         }
     }

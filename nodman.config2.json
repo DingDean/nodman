@@ -2,8 +2,12 @@
     "subscribe":"TServer",
     "publish": "TServerLog",
     "port": 4502,
+    "redis": {
+        "host" : "192.168.88.80",
+        "port" : "6379"
+    },
     "fork" : {
-        "modulePath": "./worker.js",
+        "modulePath": "./nodman.worker.js",
         "options" : {
             "silent" : true
         }

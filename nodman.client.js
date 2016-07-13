@@ -14,8 +14,8 @@ server.listen(config.port, function () {
 
 /* Setup Redis */
 var redis = require('redis');
-var subscriber = redis.createClient();
-var publisher = redis.createClient();
+var subscriber = redis.createClient(config.redis);
+var publisher = redis.createClient(config.redis);
 
 subscriber.on('error', (err) => {
     console.log('Error: ' + err);
