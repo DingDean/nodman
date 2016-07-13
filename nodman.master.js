@@ -91,7 +91,6 @@ io.on('connection', (socket) => {
     {
 
         if (isJoinedRoom[server]) {
-            //publisher.publish(server, `${socket.id} is already outputing log`);
             var serverLogInfo = {
                 server: server,
                 msg: `${server}'s Log has already been enabled!`
@@ -109,4 +108,8 @@ io.on('connection', (socket) => {
 /* Express 服务器开启监听 */
 server.listen(4500, function () {
     console.log('Server Manager is hosting on port ' + 4500);
+});
+
+process.on('exit', (code) => {
+    subscriber.unsubscribe();
 });
