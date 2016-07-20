@@ -53,12 +53,15 @@ subscriber.on('message', (channel, msg) => {
     rooms
     .map((name) => name.split('@'))
     .reduce((pre, cur)=>{
-        if (channel !== `${cur[0]}Log`) return true;
+        var serverName = cur[0];
+        var socketId = cur[1];
+
+        if (channel !== `${serverName}Log`) return true;
         var serverLogInfo = {
-            server: cur[0],
+            server: serverName
             msg: msg
         };
-        io.to(cur[1]).emit('logInfo', JSON.stringify(serverLogInfo));
+        io.to(socketId).emit('logInfo', JSON.stringify(serverLogInfo));
         return true;
     }, true);
 });
