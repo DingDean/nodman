@@ -3,7 +3,6 @@ var app = express();
 var server = require('http').Server(app);
 var fork = require('child_process').fork;
 
-
 /* global variables */
 var config = require(`./${process.argv[2]}`);
 
