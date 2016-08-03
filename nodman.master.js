@@ -8,8 +8,6 @@ var spawn = require('child_process').fork;
 
 /* Express 静态文件指向设置 */
 app.use('/', express.static(__dirname));
-//app.use('/public', express.static(@_dirname + '/public'));
-//app.use('/src', express.static(@_dirname + '/src'));
 
 /* Express 路由设置 */
 app.route('/').get(function (req, res) {
